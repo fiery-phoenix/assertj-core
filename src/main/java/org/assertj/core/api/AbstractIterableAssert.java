@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -2211,6 +2212,17 @@ public abstract class AbstractIterableAssert<SELF extends AbstractIterableAssert
   public AbstractListAssert<?, List<? extends ELEMENT>, ELEMENT, ObjectAssert<ELEMENT>> filteredOn(Predicate<? super ELEMENT> predicate) {
     checkArgument(predicate != null, "The filter predicate should not be null");
     return new ListAssert<>(stream(actual.spliterator(), false).filter(predicate).collect(toList()));
+  }
+
+// TODO !!! add methods for arrays !!!
+  public <T> SELF matches(Iterable<T> target, BiPredicate<? super ELEMENT, T> predicate) {
+    iterables.assertMatches(info, actual, target, predicate, PredicateDescription.GIVEN);
+    return myself;
+  }
+
+  public <T> SELF matches(Iterable<T> target, BiPredicate<? super ELEMENT, T> predicate, String predicateDescription) {
+    iterables.assertMatches(info, actual, target, predicate, new PredicateDescription(predicateDescription));
+    return myself;
   }
 
   /**

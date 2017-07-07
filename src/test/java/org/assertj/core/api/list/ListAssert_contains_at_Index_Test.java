@@ -12,11 +12,14 @@
  */
 package org.assertj.core.api.list;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.test.TestData.someIndex;
 
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.ListAssertBaseTest;
 import org.assertj.core.data.Index;
+import org.junit.Test;
 
 import static org.mockito.Mockito.verify;
 
@@ -40,4 +43,10 @@ public class ListAssert_contains_at_Index_Test extends ListAssertBaseTest {
   protected void verify_internal_effects() {
     verify(lists).assertContains(getInfo(assertions), getActual(assertions), "Yoda", index);
   }
+
+  @Test
+  public void test() {
+    Assertions.assertThat(asList(10, 5, 2)).matches(asList("20", "10", "4"), (e1, e2) -> e1 * 2 == Integer.valueOf(e2));
+  }
+
 }

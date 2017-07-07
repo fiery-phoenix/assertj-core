@@ -14,6 +14,7 @@ package org.assertj.core.internal;
 
 import static org.assertj.core.util.Preconditions.checkNotNull;
 
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import org.assertj.core.util.VisibleForTesting;
@@ -42,6 +43,15 @@ public class Predicates {
    * @throws NullPointerException if the given {@code Predicate} is {@code null}.
    */
   public void assertIsNotNull(Predicate<?> predicate) {
+    checkNotNull(predicate, "The predicate to evaluate should not be null");
+  }
+
+  /**
+   * Asserts the the given <code>{@link BiPredicate}</code> is not null.
+   * @param predicate the given {@code BiPredicate}.
+   * @throws NullPointerException if the given {@code BiPredicate} is {@code null}.
+   */
+  public void assertIsNotNull(BiPredicate<?, ?> predicate) {
     checkNotNull(predicate, "The predicate to evaluate should not be null");
   }
 }

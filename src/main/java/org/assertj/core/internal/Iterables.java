@@ -46,6 +46,7 @@ import static org.assertj.core.error.ShouldContainsOnlyOnce.shouldContainsOnlyOn
 import static org.assertj.core.error.ShouldEndWith.shouldEndWith;
 import static org.assertj.core.error.ShouldNotBeEmpty.shouldNotBeEmpty;
 import static org.assertj.core.error.ShouldNotContain.shouldNotContain;
+import static org.assertj.core.error.ShouldNotContainAtIndex.shouldNotContainAtIndex;
 import static org.assertj.core.error.ShouldNotContainNull.shouldNotContainNull;
 import static org.assertj.core.error.ShouldNotContainSequence.shouldNotContainSequence;
 import static org.assertj.core.error.ShouldNotContainSubsequence.shouldNotContainSubsequence;
@@ -68,18 +69,22 @@ import static org.assertj.core.util.IterableUtil.isNullOrEmpty;
 import static org.assertj.core.util.IterableUtil.sizeOf;
 import static org.assertj.core.util.Lists.newArrayList;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import javafx.util.Pair;
 import org.assertj.core.api.AssertionInfo;
 import org.assertj.core.api.Condition;
+import org.assertj.core.api.WritableAssertionInfo;
 import org.assertj.core.presentation.PredicateDescription;
 import org.assertj.core.util.VisibleForTesting;
 
@@ -1031,4 +1036,40 @@ public class Iterables {
     if (subsequence == null) throw new NullPointerException(nullSubsequence());
   }
 
+  /**
+   * Asserts that actual {@code Iterable} matches target {@code Iterable} element by element, using given {@code BiPredicate}.
+   *
+   * @param info contains information about the assertion.
+   * @param actual the given {@code Iterable}.
+   * @param target the {@code Iterable} to match to.
+   * @param predicate the matching {@code BiPredicate}
+   * @param predicateDescription a description of the {@link BiPredicate} used in the error message
+   * @throws AssertionError if the given {@code Iterable} is {@code null}.
+   * @throws NullPointerException if the target {@code Iterable} is {@code null}.
+   * @throws NullPointerException if the predicate is {@code null}.
+   * @throws AssertionError if actual {@code Iterable} does not match target {@code Iterable} element by element by given {@code BiPredicate}.
+   */
+  public <E, T> void assertMatches(WritableAssertionInfo info, Iterable<? extends E> actual, Iterable<T> target,
+                                      BiPredicate<? super E, T> predicate, PredicateDescription predicateDescription) {
+    assertNotNull(info, actual);
+    checkIsNotNull(target);
+    predicates.assertIsNotNull(predicate);
+    hasSameSizeAsCheck(info, actual, target, sizeOf(actual));
+
+    Iterator<? extends E> actualElements = actual.iterator();
+    Iterator<T> targetElements = target.iterator();
+
+    List<Pair<? extends E, T>> discrepancies = new ArrayList<>();
+    while (actualElements.hasNext()) {
+      E a = actualElements.next();
+      T t = targetElements.next();
+      if (!predicate.test(a, t)) {
+        discrepancies.add(new Pair<>(a, t));
+      }
+    }
+
+    if (!discrepancies.isEmpty())  {
+      throw failures.failure(info, elementsShouldMatch(actual, target, discrepancies, predicateDescription));
+    }
+  }
 }
