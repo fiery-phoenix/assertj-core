@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.error.ElementsShouldMatch.elementsShouldMatch;
 import static org.assertj.core.util.Lists.newArrayList;
 
+import javafx.util.Pair;
 import org.assertj.core.description.TextDescription;
 import org.assertj.core.presentation.PredicateDescription;
 import org.assertj.core.presentation.StandardRepresentation;
@@ -31,7 +32,7 @@ public class ElementsShouldMatch_create_Test {
     assertThat(message).isEqualTo(format("[Test] %n" +
                                          "Expecting all elements of:%n" +
                                          "  <[\"Luke\", \"Yoda\"]>%n" +
-                                         "to match given predicate but this element did not:%n" +
+                                         "to match given predicate, but this element did not:%n" +
                                          "  <\"Yoda\">"));
   }
 
@@ -44,8 +45,24 @@ public class ElementsShouldMatch_create_Test {
     assertThat(message).isEqualTo(format("[Test] %n" +
                                          "Expecting all elements of:%n" +
                                          "  <[\"Luke\", \"Yoda\"]>%n" +
-                                         "to match given predicate but these elements did not:%n" +
+                                         "to match given predicate, but these elements did not:%n" +
                                          "  <[\"Luke\", \"Yoda\"]>"));
+  }
+
+  @Test
+  public void should_create_error_message_with_zipped_non_matching_elements() {
+    ErrorMessageFactory factory = elementsShouldMatch(newArrayList(1, 2, 3, 4, 5),
+                                                      newArrayList("1", "2", "4", "4", "7"),
+                                                      newArrayList(new Pair<>(3, "4"), new Pair<>(5, "7")),
+                                                      PredicateDescription.GIVEN);
+    String message = factory.create(new TextDescription("Test"), new StandardRepresentation());
+    assertThat(message).isEqualTo(format("[Test] %n" +
+                                           "Expecting all elements of:%n" +
+                                           "  <[1, 2, 3, 4, 5]>%n" +
+                                           "to match%n" +
+                                           "  <[\"1\", \"2\", \"4\", \"4\", \"7\"]>%n" +
+                                           "by given predicate, but these elements did not:%n" +
+                                           "  <[3=4, 5=7]>"));
   }
 
   @Test
@@ -56,7 +73,7 @@ public class ElementsShouldMatch_create_Test {
     assertThat(message).isEqualTo(format("[Test] %n" +
                                          "Expecting all elements of:%n" +
                                          "  <[\"Luke\", \"Yoda\"]>%n" +
-                                         "to match 'custom' predicate but this element did not:%n" +
+                                         "to match 'custom' predicate, but this element did not:%n" +
                                          "  <\"Yoda\">"));
   }
 

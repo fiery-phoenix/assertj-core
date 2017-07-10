@@ -996,6 +996,43 @@ public class Iterables {
                            shouldContainExactlyInAnyOrder(actual, values, notFound, notExpected, comparisonStrategy));
   }
 
+  /**
+   * Asserts that actual {@code Iterable} matches target {@code Iterable} element by element, using given {@code BiPredicate}.
+   *
+   * @param info contains information about the assertion.
+   * @param actual the given {@code Iterable}.
+   * @param target the {@code Iterable} to match to.
+   * @param predicate the matching {@code BiPredicate}
+   * @param predicateDescription a description of the {@link BiPredicate} used in the error message
+   * @throws AssertionError if the given {@code Iterable} is {@code null}.
+   * @throws NullPointerException if the target {@code Iterable} is {@code null}.
+   * @throws NullPointerException if the predicate is {@code null}.
+   * @throws AssertionError if actual {@code Iterable} does not match target {@code Iterable} element by element by given {@code BiPredicate}.
+   */
+  public <E, T> void assertMatches(AssertionInfo info, Iterable<? extends E> actual, Iterable<T> target,
+                                   BiPredicate<? super E, T> predicate, PredicateDescription predicateDescription) {
+    assertNotNull(info, actual);
+    checkIsNotNull(target);
+    predicates.assertIsNotNull(predicate);
+    hasSameSizeAsCheck(info, actual, target, sizeOf(actual));
+
+    Iterator<? extends E> actualElements = actual.iterator();
+    Iterator<T> targetElements = target.iterator();
+
+    List<Pair<? extends E, T>> discrepancies = new ArrayList<>();
+    while (actualElements.hasNext()) {
+      E a = actualElements.next();
+      T t = targetElements.next();
+      if (!predicate.test(a, t)) {
+        discrepancies.add(new Pair<>(a, t));
+      }
+    }
+
+    if (!discrepancies.isEmpty())  {
+      throw failures.failure(info, elementsShouldMatch(actual, target, discrepancies, predicateDescription));
+    }
+  }
+
   void assertNotNull(AssertionInfo info, Iterable<?> actual) {
     Objects.instance().assertNotNull(info, actual);
   }
@@ -1034,42 +1071,5 @@ public class Iterables {
 
   private static void checkIsNotNullSubsequence(Object subsequence) {
     if (subsequence == null) throw new NullPointerException(nullSubsequence());
-  }
-
-  /**
-   * Asserts that actual {@code Iterable} matches target {@code Iterable} element by element, using given {@code BiPredicate}.
-   *
-   * @param info contains information about the assertion.
-   * @param actual the given {@code Iterable}.
-   * @param target the {@code Iterable} to match to.
-   * @param predicate the matching {@code BiPredicate}
-   * @param predicateDescription a description of the {@link BiPredicate} used in the error message
-   * @throws AssertionError if the given {@code Iterable} is {@code null}.
-   * @throws NullPointerException if the target {@code Iterable} is {@code null}.
-   * @throws NullPointerException if the predicate is {@code null}.
-   * @throws AssertionError if actual {@code Iterable} does not match target {@code Iterable} element by element by given {@code BiPredicate}.
-   */
-  public <E, T> void assertMatches(AssertionInfo info, Iterable<? extends E> actual, Iterable<T> target,
-                                      BiPredicate<? super E, T> predicate, PredicateDescription predicateDescription) {
-    assertNotNull(info, actual);
-    checkIsNotNull(target);
-    predicates.assertIsNotNull(predicate);
-    hasSameSizeAsCheck(info, actual, target, sizeOf(actual));
-
-    Iterator<? extends E> actualElements = actual.iterator();
-    Iterator<T> targetElements = target.iterator();
-
-    List<Pair<? extends E, T>> discrepancies = new ArrayList<>();
-    while (actualElements.hasNext()) {
-      E a = actualElements.next();
-      T t = targetElements.next();
-      if (!predicate.test(a, t)) {
-        discrepancies.add(new Pair<>(a, t));
-      }
-    }
-
-    if (!discrepancies.isEmpty())  {
-      throw failures.failure(info, elementsShouldMatch(actual, target, discrepancies, predicateDescription));
-    }
   }
 }

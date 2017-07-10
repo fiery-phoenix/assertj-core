@@ -16,10 +16,10 @@ import org.assertj.core.presentation.PredicateDescription;
 
 public class ElementsShouldMatch extends BasicErrorMessageFactory {
 
-  private static final String SINGLE_NON_MATCHING_ELEMENT = "%nExpecting all elements of:%n  <%s>%nto match %s predicate but this element did not:%n  <%s>";
-  private static final String MULTIPLE_NON_MATCHING_ELEMENT = "%nExpecting all elements of:%n  <%s>%nto match %s predicate but these elements did not:%n  <%s>";
-  // TODO !!! rename it !!! or move to another class
-  private static final String MULTIPLE_NON_MATCHING_ELEMENT2 = "%nExpecting all elements of:%n  <%s>%nto match%n  <%s>%nby %s predicate but these elements did not:%n  <%s>";
+  private static final String SINGLE_NON_MATCHING_ELEMENT = "%nExpecting all elements of:%n  <%s>%nto match %s predicate, but this element did not:%n  <%s>";
+  private static final String MULTIPLE_NON_MATCHING_ELEMENTS = "%nExpecting all elements of:%n  <%s>%nto match %s predicate, but these elements did not:%n  <%s>";
+  private static final String ZIPPED_MULTIPLE_NON_MATCHING_ELEMENTS =
+    "%nExpecting all elements of:%n  <%s>%nto match%n  <%s>%nby %s predicate, but these elements did not:%n  <%s>";
 
   public static <T> ErrorMessageFactory elementsShouldMatch(Object actual, T elementsNotMatchingPredicate, PredicateDescription predicateDescription) {
     return elementsNotMatchingPredicate instanceof Iterable
@@ -37,10 +37,10 @@ public class ElementsShouldMatch extends BasicErrorMessageFactory {
   }
 
   private ElementsShouldMatch(Object actual, Iterable<?> notMatching, PredicateDescription predicateDescription) {
-    super(MULTIPLE_NON_MATCHING_ELEMENT, actual, predicateDescription, notMatching);
+    super(MULTIPLE_NON_MATCHING_ELEMENTS, actual, predicateDescription, notMatching);
   }
 
   private ElementsShouldMatch(Object actual, Object target, Iterable<?> notMatching, PredicateDescription predicateDescription) {
-    super(MULTIPLE_NON_MATCHING_ELEMENT2, actual, target, predicateDescription, notMatching);
+    super(ZIPPED_MULTIPLE_NON_MATCHING_ELEMENTS, actual, target, predicateDescription, notMatching);
   }
 }

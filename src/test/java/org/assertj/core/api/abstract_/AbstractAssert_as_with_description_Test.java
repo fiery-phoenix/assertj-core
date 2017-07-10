@@ -17,9 +17,11 @@ import static org.assertj.core.test.ExpectedException.none;
 import static org.assertj.core.test.TestData.someDescription;
 
 import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.Assumptions;
 import org.assertj.core.api.ConcreteAssert;
 import org.assertj.core.description.Description;
 import org.assertj.core.test.ExpectedException;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,6 +41,7 @@ public class AbstractAssert_as_with_description_Test {
 
   @Before
   public void setUp() {
+    Assumptions.assumeThat("test").isNotBlank().isEqualTo("testa");
     assertions = new ConcreteAssert(6L);
     d = someDescription();
   }

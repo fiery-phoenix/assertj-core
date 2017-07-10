@@ -23,7 +23,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for <code>{@link ListAssert#contains(Object, Index)}</code>.
- * 
+ *
  * @author Alex Ruiz
  * @author Joel Costigliola
  */
